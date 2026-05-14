@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rural Ride Dispatcher</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Bellary village rides</p>
+        <h1>Dispatcher</h1>
+      </div>
+      <div class="top-actions">
+        <button id="seedDemo" class="button secondary" type="button">Load demo</button>
+        <button id="exportData" class="button secondary" type="button">Export CSV</button>
+        <button id="clearDone" class="button ghost" type="button">Clear completed</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="panel request-panel" aria-labelledby="request-title">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">New booking</p>
+            <h2 id="request-title">Passenger request</h2>
+          </div>
+          <span class="counter" id="rideCounter">0 rides today</span>
+        </div>
+
+        <form id="rideForm" class="ride-form">
+          <label>
+            Passenger name
+            <input id="passengerName" name="passengerName" autocomplete="name" placeholder="Example: Suresh" required>
+          </label>
+          <label>
+            Phone
+            <input id="passengerPhone" name="passengerPhone" inputmode="tel" placeholder="9XXXXXXXXX" required>
+          </label>
+          <label>
+            Pickup
+            <input id="pickup" name="pickup" placeholder="Bellary Bus Stand" required>
+          </label>
+          <label>
+            Drop
+            <input id="drop" name="drop" placeholder="Village name" required>
+          </label>
+          <label>
+            Time
+            <input id="time" name="time" placeholder="Now / 8:30 AM" required>
+          </label>
+          <label>
+            Distance km
+            <input id="distance" name="distance" type="number" min="1" max="80" value="10" required>
+          </label>
+          <label>
+            Fare
+            <input id="fare" name="fare" type="number" min="30" step="10" value="80" required>
+          </label>
+          <label>
+            Passengers
+            <input id="seats" name="seats" type="number" min="1" max="2" value="1" required>
+          </label>
+          <label class="wide">
+            Notes
+            <input id="notes" name="notes" placeholder="Hospital trip, parcel, women passenger, luggage">
+          </label>
+          <button class="button primary wide" type="submit">Create ride</button>
+        </form>
+      </section>
+
+      <section class="panel rider-panel" aria-labelledby="rider-title">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Supply</p>
+            <h2 id="rider-title">Riders</h2>
+          </div>
+          <button id="addRiderButton" class="button secondary" type="button">Add rider</button>
+        </div>
+
+        <form id="riderForm" class="rider-form hidden">
+          <label>
+            Rider name
+            <input id="riderName" name="riderName" placeholder="Ramesh" required>
+          </label>
+          <label>
+            Phone
+            <input id="riderPhone" name="riderPhone" inputmode="tel" placeholder="9XXXXXXXXX" required>
+          </label>
+          <label>
+            Base area
+            <input id="riderBase" name="riderBase" placeholder="Bellary / Village X" required>
+          </label>
+          <label>
+            Vehicle
+            <input id="vehicle" name="vehicle" placeholder="KA34 XX 1234" required>
+          </label>
+          <button class="button primary" type="submit">Save rider</button>
+        </form>
+
+        <div id="riderList" class="rider-list"></div>
+      </section>
+
+      <section class="panel board-panel" aria-labelledby="board-title">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Live board</p>
+            <h2 id="board-title">Dispatch queue</h2>
+          </div>
+          <div class="status-tabs" role="tablist" aria-label="Ride filter">
+            <button class="tab active" type="button" data-filter="all">All</button>
+            <button class="tab" type="button" data-filter="new">New</button>
+            <button class="tab" type="button" data-filter="assigned">Assigned</button>
+            <button class="tab" type="button" data-filter="completed">Done</button>
+          </div>
+        </div>
+        <div id="rideBoard" class="ride-board"></div>
+      </section>
+    </main>
+
+    <template id="rideCardTemplate">
+      <article class="ride-card">
+        <div class="ride-card-header">
+          <div>
+            <p class="ride-id"></p>
+            <h3></h3>
+          </div>
+          <span class="status-pill"></span>
+        </div>
+        <dl class="ride-details"></dl>
+        <div class="assign-row"></div>
+        <div class="message-actions"></div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
