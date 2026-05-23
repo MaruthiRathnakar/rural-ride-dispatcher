@@ -32,3 +32,13 @@ http://127.0.0.1:4173
 ```
 
 It stores data in the browser using `localStorage`.
+
+## Android Prototype
+
+The Android static prototype lives in:
+
+```text
+android/
+```
+
+Open the `android/` folder in Android Studio and run the `app` configuration. The prototype uses static mock data and covers the passenger and bike owner flows from the wireframes.
