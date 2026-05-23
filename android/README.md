@@ -14,7 +14,17 @@ Static Android prototype built from `docs/WIREFRAMES.md`.
 
 Open the `android/` folder in Android Studio, let Gradle sync, and run the `app` configuration.
 
-This environment does not currently have Java or Gradle installed, so the project was not compiled here.
+CLI build:
+
+```sh
+gradle :app:assembleDebug
+```
+
+The debug APK is generated at:
+
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
 
 ## Prototype Coverage
 

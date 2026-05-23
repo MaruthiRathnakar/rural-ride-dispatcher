@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -447,7 +448,7 @@ private fun ActiveTripScreen(onComplete: () -> Unit) {
 }
 
 @Composable
-private fun ScreenFrame(content: @Composable Column.() -> Unit) {
+private fun ScreenFrame(content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -464,7 +465,7 @@ private fun FormScreen(
     title: String,
     subtitle: String,
     onBack: () -> Unit,
-    content: @Composable Column.() -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     ScreenFrame {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -543,7 +544,7 @@ private fun RideOfferCard(offer: RideOffer, onView: () -> Unit) {
             }
             Badge(text = offer.fare)
         }
-        Divider(color = AppColors.Line)
+        HorizontalDivider(color = AppColors.Line)
         InfoRow(title = "Departure", value = offer.departure)
         InfoRow(title = "Seats", value = offer.seats)
         PrimaryButton(text = "View", onClick = onView)
@@ -551,7 +552,7 @@ private fun RideOfferCard(offer: RideOffer, onView: () -> Unit) {
 }
 
 @Composable
-private fun DetailCard(modifier: Modifier = Modifier, content: @Composable Column.() -> Unit) {
+private fun DetailCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
