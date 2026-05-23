@@ -1,19 +1,22 @@
-# Rural Ride Dispatcher
+# Rural Bike Pool
 
-A simple browser-based dispatcher app for a rural bike ride service.
+Android-first peer-to-peer bike pool platform for rural and semi-urban routes.
 
-It helps an operator:
+The original repository started with a browser dispatcher prototype. The current product direction is a proper Android app that works more like a rural bike-pooling marketplace:
 
-- Add passenger ride requests.
-- Add verified riders.
-- Mark riders available or unavailable.
-- Assign riders to rides.
-- Copy WhatsApp-ready messages for rider groups, passengers, and assigned riders.
-- Export ride data as CSV.
+- Passengers search for rides between villages and towns.
+- Verified bike owners post planned rides or accept requests.
+- The platform handles trust, matching, trip lifecycle, fare guidance, ratings, and admin operations.
 
-## Run locally
+## Product Docs
 
-Open `index.html` in a browser, or run a local server:
+- [PRD](docs/PRD.md)
+- [Architecture Plan](docs/ARCHITECTURE.md)
+- [Development Cycle](docs/DEVELOPMENT_CYCLE.md)
+
+## Existing Prototype
+
+The current static dispatcher prototype is still available:
 
 ```sh
 python3 -m http.server 4173
@@ -25,4 +28,4 @@ Then visit:
 http://127.0.0.1:4173
 ```
 
-Data is stored in the browser using `localStorage`.
+It stores data in the browser using `localStorage`.

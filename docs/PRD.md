@@ -1,245 +1,400 @@
-# Rural Ride Dispatcher PRD
+# Rural Bike Pool Android App PRD
 
 ## 1. Product Summary
 
-Rural Ride Dispatcher is a lightweight web tool for managing bike ride bookings between Bellary and nearby villages. The first version supports a manual operations model where passengers book through phone or WhatsApp, an operator records the ride, assigns a verified rider, and sends WhatsApp-ready messages to riders and passengers.
+Rural Bike Pool is a peer-to-peer Android mobility platform for rural and semi-urban routes. It helps bike owners share planned or on-demand rides with passengers traveling between villages, towns, bus stands, colleges, hospitals, markets, and work locations.
 
-## 2. Problem
+The product should feel operationally similar to Quick Ride's carpool/ride-sharing behavior, but optimized for rural bike pooling. The long-term architecture can borrow proven ideas from Uber-style ride platforms: location-aware matching, trip lifecycle, safety, payments, ratings, and scalable backend services.
 
-Rural passengers often need reliable village-to-town transport for bus stands, hospitals, markets, colleges, and work trips. Existing public transport is cheaper but may be slow, infrequent, crowded, or unavailable at the exact time needed.
+## 2. Product Positioning
 
-For an early transport business, the biggest operational problem is not building a full app. It is coordinating requests quickly and reliably when multiple passengers and riders contact one central number.
+This is not a pure bike taxi app at the start. The stronger rural positioning is:
 
-## 3. Goals
+> A trusted bike pool network where verified local bike owners can share rides with nearby passengers on common rural routes.
 
-- Let one dispatcher handle incoming passenger requests quickly.
-- Track available riders and assign them to rides.
-- Generate consistent WhatsApp messages for rider groups, passengers, and assigned riders.
-- Keep the system simple enough to operate from a laptop or shared counter.
-- Store early data without requiring a backend.
-- Help validate demand before investing in a full customer app or rider app.
+This matters because peer-to-peer pooling can be more acceptable, cheaper, and easier to build trust around than anonymous commercial bike taxi dispatch.
 
-## 4. Non-Goals
+## 3. Problem
 
-- Real-time GPS tracking.
-- Online payments.
-- Automated WhatsApp API integration.
-- Dynamic surge pricing.
-- Multi-dispatcher permissions.
-- Native Android or iOS apps.
-- Production-grade database or authentication.
+Rural passengers often face:
 
-## 5. Target Users
+- Infrequent buses.
+- Long wait times.
+- Poor first-mile and last-mile access.
+- Expensive autos for single passengers.
+- Difficulty reaching hospitals, colleges, markets, bus stands, and work locations at the right time.
 
-### Dispatcher
+Bike owners often travel with empty seats or can accept nearby passengers on regular routes, but there is no trusted matching layer for rural users.
 
-The operator who receives bookings through phone or WhatsApp and assigns riders.
+## 4. Goals
 
-Needs:
+- Build an Android-first app for passengers and bike owners.
+- Support peer-to-peer bike pooling for rural routes.
+- Verify riders before they can accept passengers.
+- Match passengers with riders based on pickup, drop, route, time, and availability.
+- Support fixed or suggested fare sharing.
+- Provide safety and trust features from the first release.
+- Collect route demand data before expanding villages.
 
-- Create rides fast.
-- See open rides.
-- Know which riders are available.
-- Copy accurate messages.
-- Export ride records.
+## 5. Non-Goals For MVP
 
-### Rider
+- iOS app.
+- Full Uber-scale microservices.
+- Real-time surge pricing.
+- In-app wallet.
+- Advanced driver incentives.
+- Complex route optimization across many passengers.
+- Fully automated legal/commercial compliance handling.
+- Anonymous unverified riders.
 
-A verified local bike owner who accepts rides from the dispatcher.
-
-Needs:
-
-- Clear pickup/drop details.
-- Fixed fare before accepting.
-- Passenger contact only after assignment.
-- Simple completion instructions.
+## 6. Target Users
 
 ### Passenger
 
-A local passenger booking a ride through phone or WhatsApp.
+A rural or semi-urban user who needs a ride from village to town or town to village.
 
-Needs:
+Common trips:
 
-- Quick confirmation.
-- Rider name and phone.
-- Fare clarity.
-- Trust that the rider is verified.
+- Village to Bellary bus stand.
+- Village to hospital.
+- Village to college.
+- Market and work commute.
+- Return trip from town to village.
 
-## 6. MVP Scope
+### Bike Owner / Pool Rider
 
-### Passenger Booking
+A verified local bike owner willing to share a ride for fuel-cost contribution or additional income.
 
-- Add passenger name and phone number.
-- Add pickup, drop, time, distance, fare, passenger count, and notes.
-- Auto-create a ride ID.
-- Default new rides to `New` status.
+Common patterns:
 
-### Rider Management
+- Daily commute.
+- Regular village-to-town route.
+- Accept nearby one-off requests.
+- Offer planned ride at a fixed time.
 
-- Add rider name, phone, base area, and vehicle number.
-- Mark riders available or unavailable.
-- Only available riders should appear in new assignment dropdowns.
+### Admin / Operations Team
 
-### Dispatch Board
+The business operator who verifies riders, monitors trips, handles complaints, sets route/fare policies, and manages local growth.
 
-- Show all rides in a live board.
-- Filter rides by all, new, assigned, and completed.
-- Assign a rider to a ride.
-- Mark ride as completed.
-- Mark ride as cancelled.
+## 7. MVP Scope
 
-### WhatsApp Support
+### Passenger App
 
-- Copy rider group message.
-- Copy passenger confirmation message.
-- Copy assigned rider message.
-- Open WhatsApp passenger link with the generated message.
+- Sign up with phone OTP.
+- Create profile with name, gender optional, emergency contact optional.
+- Search ride by pickup, drop, date/time, and passenger count.
+- See available bike pool rides.
+- Request a ride.
+- Receive rider details after confirmation.
+- Call or message rider.
+- Track trip status.
+- Rate rider after trip.
+- Report issue.
 
-### Data
+### Bike Owner App
 
-- Store data locally in the browser using `localStorage`.
-- Export rides as CSV.
-- Include demo data for training and testing.
+- Sign up with phone OTP.
+- Submit verification documents:
+  - Name.
+  - Phone.
+  - Bike number.
+  - Driving license.
+  - RC.
+  - Insurance.
+  - Profile photo.
+- Set availability.
+- Create planned ride:
+  - Start point.
+  - End point.
+  - Departure time.
+  - Seats available.
+  - Fare contribution.
+- Accept passenger requests.
+- Start trip.
+- Complete trip.
+- Rate passenger.
 
-## 7. Core Workflow
+### Admin Console
 
-1. Passenger calls or sends WhatsApp message to the central booking number.
-2. Dispatcher creates a ride request in the app.
-3. Dispatcher copies the rider group message and posts it to the rider WhatsApp group.
-4. Rider replies with the ride ID, for example `ACCEPT R104`.
-5. Dispatcher assigns that rider in the app.
-6. Dispatcher sends confirmation to passenger.
-7. Dispatcher sends passenger details to rider.
-8. Rider completes trip and reports `DONE R104`.
-9. Dispatcher marks ride as completed.
+MVP admin can start as a web console.
 
-## 8. Pricing Assumption
+- View users.
+- Approve or reject bike owners.
+- View rides.
+- View trips.
+- Handle complaints.
+- Configure service routes.
+- Configure fare guidance.
 
-Initial fare guidance:
+### Matching
+
+MVP matching should be simple:
+
+- Exact or nearby pickup area.
+- Exact or nearby drop area.
+- Departure time window.
+- Rider availability.
+- Seat availability.
+- Rider verification status.
+
+### Payments
+
+MVP should support cash or UPI outside the app.
+
+The app records:
+
+- Fare amount.
+- Payment mode.
+- Payment status manually confirmed by rider/passenger.
+
+In-app payments can come later.
+
+## 8. Core Workflows
+
+### Planned Pool Ride
+
+1. Bike owner posts a ride from village to Bellary at 8:00 AM.
+2. Passenger searches the same route.
+3. Passenger requests seat.
+4. Rider accepts.
+5. Passenger receives rider and bike details.
+6. Rider starts trip.
+7. Rider completes trip.
+8. Both users rate each other.
+
+### On-Demand Ride Request
+
+1. Passenger requests a ride now.
+2. Nearby verified riders receive request.
+3. One rider accepts.
+4. Passenger confirms.
+5. Trip starts and completes.
+
+MVP can launch with planned pool rides first, then add on-demand matching.
+
+## 9. Fare Model
+
+The fare should be a contribution model, not just taxi pricing.
+
+Initial guidance:
 
 - Minimum fare: Rs 40 to Rs 50.
-- Normal rural ride: Rs 20 base + Rs 8 to Rs 12 per km.
-- If bus fare is Rs 40, bike ride target fare is usually Rs 70 to Rs 100 depending on distance, urgency, and return-empty risk.
+- Suggested fare: Rs 20 base + Rs 8 to Rs 12 per km.
+- If bus fare is Rs 40, target pooled bike contribution is usually Rs 60 to Rs 90.
+- Regular commute subscriptions can be cheaper per ride.
 
-Fare calculation in the MVP is a helper only. Dispatcher can override fare manually.
+Admin should be able to set route-based fare guidance, and riders should not exceed configured maximums.
 
-## 9. Success Metrics
+## 10. Trust And Safety
 
-### Operational Metrics
+MVP must include:
 
-- Number of rides created per day.
-- Percentage of rides assigned.
-- Average time from booking to assignment.
-- Completed rides per active rider.
-- Cancelled rides.
+- Phone OTP.
+- Rider document verification.
+- Rider profile photo.
+- Bike number visible to passenger after match.
+- Emergency contact support.
+- Trip status trail.
+- User ratings.
+- Complaint reporting.
+- Admin ability to suspend users.
 
-### Business Metrics
+Later:
 
-- Repeat passengers.
-- Daily gross booking value.
-- Dispatcher commission per ride.
-- Rider earnings per day.
-- Top pickup and drop points.
+- Live location sharing.
+- SOS button.
+- Women-preferred rider options.
+- Trusted route captains.
+- Ride PIN before trip start.
 
-### Quality Metrics
-
-- Complaints per 100 rides.
-- Rider cancellation frequency.
-- Passenger no-show frequency.
-- Wrong fare or wrong route incidents.
-
-## 10. Functional Requirements
+## 11. Functional Requirements
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| FR-1 | Dispatcher can create a new ride request. | Must |
-| FR-2 | Dispatcher can add and manage riders. | Must |
-| FR-3 | Dispatcher can mark riders available or unavailable. | Must |
-| FR-4 | Dispatcher can assign a rider to a ride. | Must |
-| FR-5 | Dispatcher can mark ride status as new, assigned, completed, or cancelled. | Must |
-| FR-6 | App can generate WhatsApp-ready messages. | Must |
-| FR-7 | App can export rides to CSV. | Should |
-| FR-8 | App can provide demo data for training. | Should |
-| FR-9 | App can calculate suggested fare from distance. | Should |
-| FR-10 | App supports mobile layout. | Should |
+| FR-1 | Passenger can register/login using phone OTP. | Must |
+| FR-2 | Rider can register/login using phone OTP. | Must |
+| FR-3 | Rider can submit verification documents. | Must |
+| FR-4 | Admin can approve verified riders. | Must |
+| FR-5 | Rider can create a planned bike pool ride. | Must |
+| FR-6 | Passenger can search available rides. | Must |
+| FR-7 | Passenger can request a seat. | Must |
+| FR-8 | Rider can accept or reject passenger request. | Must |
+| FR-9 | App can manage trip statuses. | Must |
+| FR-10 | Users can call/message after match. | Must |
+| FR-11 | Passenger and rider can rate each other. | Should |
+| FR-12 | Admin can view rides, users, and complaints. | Should |
+| FR-13 | App can suggest fare by route or distance. | Should |
+| FR-14 | App can support cash/UPI status tracking. | Should |
 
-## 11. Data Model
+## 12. Suggested MVP Tech Stack
 
-### Ride
+### Android
+
+- Kotlin.
+- Jetpack Compose.
+- MVVM architecture.
+- Coroutines and Flow.
+- Retrofit or Ktor client.
+- Room for local cache.
+- Google Maps SDK or Mappls/MapmyIndia depending on cost and India coverage.
+- Firebase Cloud Messaging for notifications.
+
+### Backend
+
+- Node.js with NestJS or Java/Kotlin with Spring Boot.
+- PostgreSQL with PostGIS for location queries.
+- Redis for live availability and short-lived matching state.
+- REST API first; WebSockets later for live trip updates.
+- Object storage for documents and profile photos.
+
+### Admin Web
+
+- React or Next.js.
+- Role-based admin login.
+- Document review and trip monitoring.
+
+### Infrastructure
+
+- Start simple on one cloud provider.
+- Dockerized backend.
+- Managed PostgreSQL.
+- Managed Redis.
+- CI/CD from GitHub.
+
+## 13. MVP Data Model
+
+### User
 
 - `id`
-- `createdAt`
-- `passengerName`
-- `passengerPhone`
-- `pickup`
-- `drop`
-- `time`
-- `distance`
-- `fare`
-- `seats`
-- `notes`
-- `status`
-- `riderId`
-
-### Rider
-
-- `id`
-- `name`
 - `phone`
-- `base`
-- `vehicle`
-- `available`
+- `name`
+- `role`
+- `profilePhotoUrl`
+- `status`
+- `createdAt`
 
-## 12. Risks
+### RiderProfile
 
-- Browser-local storage can be lost if the browser is cleared.
-- One dispatcher may struggle with high ride volume.
-- WhatsApp message copy/paste can cause human mistakes.
-- Passenger and rider privacy needs careful handling.
-- Legal requirements for bike taxi operations vary by location and must be checked before launch.
+- `userId`
+- `bikeNumber`
+- `licenseUrl`
+- `rcUrl`
+- `insuranceUrl`
+- `verificationStatus`
+- `baseVillage`
+- `rating`
 
-## 13. Next Product Milestones
+### Route
 
-### Milestone 1: Manual Dispatcher MVP
+- `id`
+- `startArea`
+- `endArea`
+- `distanceKm`
+- `suggestedFare`
+- `maxFare`
 
-- Current static web app.
-- Local storage.
-- CSV export.
-- WhatsApp message helpers.
+### RideOffer
 
-### Milestone 2: Persistent Operations
+- `id`
+- `riderId`
+- `startArea`
+- `endArea`
+- `startLat`
+- `startLng`
+- `endLat`
+- `endLng`
+- `departureTime`
+- `availableSeats`
+- `fare`
+- `status`
 
-- Backend database.
-- Login for dispatcher.
-- Daily ride reports.
-- Rider performance view.
+### RideRequest
 
-### Milestone 3: WhatsApp Automation
+- `id`
+- `passengerId`
+- `rideOfferId`
+- `pickupArea`
+- `dropArea`
+- `requestedSeats`
+- `status`
 
-- WhatsApp Business API integration.
-- Booking templates.
-- Rider acceptance flow.
-- Automated passenger updates.
+### Trip
 
-### Milestone 4: Rider App or Rider Web View
+- `id`
+- `rideOfferId`
+- `passengerId`
+- `riderId`
+- `status`
+- `fare`
+- `paymentMode`
+- `paymentStatus`
+- `startedAt`
+- `completedAt`
 
-- Rider receives assigned rides.
-- Rider accepts or rejects.
-- Rider marks pickup and completion.
+## 14. Milestones
 
-### Milestone 5: Passenger Booking Experience
+### Milestone 0: Product Foundation
 
-- Public booking form.
-- Fare estimate.
-- Saved passenger history.
-- Repeat route bookings.
+- Finalize PRD.
+- Define launch geography.
+- Define first 10 routes.
+- Define legal/compliance assumptions.
+- Create UX wireframes.
 
-## 14. Open Questions
+### Milestone 1: Android Prototype
 
-- What are the first 5 villages to support?
-- What are the fixed fares for each route?
-- What hours will the service operate?
-- Will the first model support women-only rider assignment or family-preferred riders?
-- Will riders pay commission per trip or weekly subscription?
-- Who settles cash and when?
-- What exact legal structure is needed before launch?
+- Kotlin Compose app shell.
+- Passenger/rider role selection.
+- Static route search.
+- Mock ride offers.
+- Mock request/accept flow.
+
+### Milestone 2: Backend MVP
+
+- Auth.
+- User profiles.
+- Rider verification upload.
+- Ride offer creation.
+- Ride request and acceptance APIs.
+
+### Milestone 3: Admin Console
+
+- Rider approval.
+- Ride/trip list.
+- Complaint list.
+- Route/fare configuration.
+
+### Milestone 4: Field Pilot
+
+- Launch with 20 to 50 verified riders.
+- Launch on 5 to 10 routes.
+- Track completed trips, cancellations, complaints, and repeat usage.
+
+### Milestone 5: Live Matching And Safety
+
+- Push notifications.
+- Live rider availability.
+- SOS and trip sharing.
+- Better route matching.
+
+## 15. Success Metrics
+
+- Verified riders onboarded.
+- Ride offers created per day.
+- Passenger searches per day.
+- Request-to-acceptance rate.
+- Completed trips per day.
+- Cancellation rate.
+- Repeat passenger rate.
+- Average rider earnings.
+- Complaints per 100 trips.
+
+## 16. Open Questions
+
+- Should MVP start with planned bike pool rides only, or planned plus on-demand?
+- What exact Bellary routes should launch first?
+- Should women passengers be able to choose women-preferred or trusted riders?
+- Should fare be fixed by platform or chosen by rider within a limit?
+- What documents are legally required for this model in Karnataka?
+- Should the first app support Kannada first, then English/Hindi/Telugu?
+- How will offline users book if they do not use the app?

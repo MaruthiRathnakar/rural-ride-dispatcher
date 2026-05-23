@@ -73,8 +73,10 @@ For each release:
 ## 7. Immediate Backlog
 
 - Convert PRD requirements into GitHub issues.
-- Add route/fare table management.
-- Add search and filters for passenger phone, rider, pickup, and drop.
-- Add daily summary metrics.
-- Add data backup/import.
-- Add safer confirmation before clearing completed rides.
+- Create Android wireframes for passenger and bike owner flows.
+- Decide Android stack and package structure.
+- Define API contract for auth, riders, ride offers, ride requests, and trips.
+- Create backend project skeleton.
+- Create Android app skeleton.
+- Define first launch routes around Bellary.
+- Confirm legal/compliance assumptions for peer-to-peer bike pooling in Karnataka.
