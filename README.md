@@ -12,6 +12,9 @@ The original repository started with a browser dispatcher prototype. The current
 
 - [PRD](docs/PRD.md)
 - [Architecture Plan](docs/ARCHITECTURE.md)
+- [Wireframes](docs/WIREFRAMES.md)
+- [API Contract](docs/API_CONTRACT.md)
+- [OpenAPI MVP Spec](docs/openapi.mvp.yaml)
 - [Development Cycle](docs/DEVELOPMENT_CYCLE.md)
 
 ## Existing Prototype

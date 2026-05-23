@@ -1,0 +1,1206 @@
+openapi: 3.0.3
+info:
+  title: Rural Bike Pool MVP API
+  version: 0.1.0
+  description: MVP API contract for the Android-first rural bike pooling platform.
+servers:
+  - url: https://api.ruralbikepool.example.com/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Users
+  - name: RiderVerification
+  - name: Files
+  - name: Routes
+  - name: RideOffers
+  - name: RideRequests
+  - name: Trips
+  - name: Ratings
+  - name: Complaints
+  - name: Admin
+paths:
+  /auth/otp:
+    post:
+      tags: [Auth]
+      summary: Send OTP
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendOtpRequest'
+      responses:
+        '200':
+          description: OTP request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OtpResponseEnvelope'
+  /auth/otp/verify:
+    post:
+      tags: [Auth]
+      summary: Verify OTP
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+      responses:
+        '200':
+          description: User authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseEnvelope'
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseEnvelope'
+  /me:
+    get:
+      tags: [Users]
+      summary: Get current user
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEnvelope'
+    patch:
+      tags: [Users]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEnvelope'
+  /me/active-role:
+    post:
+      tags: [Users]
+      summary: Switch active role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  $ref: '#/components/schemas/UserRole'
+      responses:
+        '200':
+          description: Active role changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEnvelope'
+  /rider-profile:
+    get:
+      tags: [RiderVerification]
+      summary: Get rider profile
+      responses:
+        '200':
+          description: Rider profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiderProfileEnvelope'
+    put:
+      tags: [RiderVerification]
+      summary: Create or update rider profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertRiderProfileRequest'
+      responses:
+        '200':
+          description: Rider profile saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiderProfileEnvelope'
+  /rider-profile/submit:
+    post:
+      tags: [RiderVerification]
+      summary: Submit rider profile for review
+      responses:
+        '200':
+          description: Rider profile submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiderProfileEnvelope'
+  /files/upload-url:
+    post:
+      tags: [Files]
+      summary: Create signed upload URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUploadUrlRequest'
+      responses:
+        '200':
+          description: Upload URL created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUploadUrlEnvelope'
+  /areas:
+    get:
+      tags: [Routes]
+      summary: Search supported areas
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Areas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AreaListEnvelope'
+  /fare-estimates:
+    get:
+      tags: [Routes]
+      summary: Get fare estimate
+      parameters:
+        - in: query
+          name: pickupAreaId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: dropAreaId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: seats
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Fare estimate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FareEstimateEnvelope'
+  /ride-offers:
+    post:
+      tags: [RideOffers]
+      summary: Create ride offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRideOfferRequest'
+      responses:
+        '200':
+          description: Ride offer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideOfferEnvelope'
+  /ride-offers/search:
+    get:
+      tags: [RideOffers]
+      summary: Search ride offers
+      parameters:
+        - in: query
+          name: startAreaId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: endAreaId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: departureFrom
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: departureTo
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: seats
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Matching ride offers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideOfferListEnvelope'
+  /ride-offers/{offerId}:
+    get:
+      tags: [RideOffers]
+      summary: Get ride offer details
+      parameters:
+        - $ref: '#/components/parameters/OfferId'
+      responses:
+        '200':
+          description: Ride offer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideOfferEnvelope'
+  /ride-offers/{offerId}/cancel:
+    post:
+      tags: [RideOffers]
+      summary: Cancel ride offer
+      parameters:
+        - $ref: '#/components/parameters/OfferId'
+      responses:
+        '200':
+          description: Ride offer cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideOfferEnvelope'
+  /ride-offers/{offerId}/requests:
+    post:
+      tags: [RideRequests]
+      summary: Request seat on a ride offer
+      parameters:
+        - $ref: '#/components/parameters/OfferId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRideRequestRequest'
+      responses:
+        '200':
+          description: Ride request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideRequestEnvelope'
+  /ride-requests:
+    get:
+      tags: [RideRequests]
+      summary: List ride requests
+      parameters:
+        - in: query
+          name: scope
+          schema:
+            type: string
+            enum: [mine]
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/RideRequestStatus'
+      responses:
+        '200':
+          description: Ride requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideRequestListEnvelope'
+  /ride-requests/{requestId}/accept:
+    post:
+      tags: [RideRequests]
+      summary: Accept ride request
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Ride request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideRequestAcceptEnvelope'
+  /ride-requests/{requestId}/reject:
+    post:
+      tags: [RideRequests]
+      summary: Reject ride request
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      responses:
+        '200':
+          description: Ride request rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideRequestEnvelope'
+  /ride-requests/{requestId}/cancel:
+    post:
+      tags: [RideRequests]
+      summary: Cancel ride request
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Ride request cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideRequestEnvelope'
+  /trips:
+    get:
+      tags: [Trips]
+      summary: List trips
+      parameters:
+        - in: query
+          name: scope
+          schema:
+            type: string
+            enum: [mine]
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/TripStatus'
+      responses:
+        '200':
+          description: Trips
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripListEnvelope'
+  /trips/{tripId}:
+    get:
+      tags: [Trips]
+      summary: Get trip details
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+  /trips/{tripId}/rider-on-way:
+    post:
+      tags: [Trips]
+      summary: Mark rider on way
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+  /trips/{tripId}/start:
+    post:
+      tags: [Trips]
+      summary: Start trip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+  /trips/{tripId}/complete:
+    post:
+      tags: [Trips]
+      summary: Complete trip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTripRequest'
+      responses:
+        '200':
+          description: Trip completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+  /trips/{tripId}/cancel:
+    post:
+      tags: [Trips]
+      summary: Cancel trip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      responses:
+        '200':
+          description: Trip cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripEnvelope'
+  /ratings:
+    post:
+      tags: [Ratings]
+      summary: Create rating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRatingRequest'
+      responses:
+        '200':
+          description: Rating created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericSuccessEnvelope'
+  /complaints:
+    get:
+      tags: [Complaints]
+      summary: List complaints
+      parameters:
+        - in: query
+          name: scope
+          schema:
+            type: string
+            enum: [mine]
+      responses:
+        '200':
+          description: Complaints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintListEnvelope'
+    post:
+      tags: [Complaints]
+      summary: Create complaint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateComplaintRequest'
+      responses:
+        '200':
+          description: Complaint created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintEnvelope'
+  /admin/rider-verifications:
+    get:
+      tags: [Admin]
+      summary: List rider verifications
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/VerificationStatus'
+      responses:
+        '200':
+          description: Rider verifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiderProfileListEnvelope'
+  /admin/rider-verifications/{userId}/approve:
+    post:
+      tags: [Admin]
+      summary: Approve rider
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Rider approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiderProfileEnvelope'
+  /admin/rider-verifications/{userId}/reject:
+    post:
+      tags: [Admin]
+      summary: Reject rider
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      responses:
+        '200':
+          description: Rider rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiderProfileEnvelope'
+  /admin/trips:
+    get:
+      tags: [Admin]
+      summary: List all trips
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/TripStatus'
+      responses:
+        '200':
+          description: Trips
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripListEnvelope'
+  /admin/complaints:
+    get:
+      tags: [Admin]
+      summary: List all complaints
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/ComplaintStatus'
+      responses:
+        '200':
+          description: Complaints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintListEnvelope'
+  /admin/routes:
+    post:
+      tags: [Admin]
+      summary: Create route fare configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRouteRequest'
+      responses:
+        '200':
+          description: Route created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteEnvelope'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    OfferId:
+      in: path
+      name: offerId
+      required: true
+      schema:
+        type: string
+    RequestId:
+      in: path
+      name: requestId
+      required: true
+      schema:
+        type: string
+    TripId:
+      in: path
+      name: tripId
+      required: true
+      schema:
+        type: string
+    UserId:
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+  schemas:
+    UserRole:
+      type: string
+      enum: [passenger, rider, admin]
+    UserStatus:
+      type: string
+      enum: [active, suspended, deleted]
+    VerificationStatus:
+      type: string
+      enum: [not_submitted, pending, approved, rejected]
+    RideOfferStatus:
+      type: string
+      enum: [draft, active, full, started, completed, cancelled]
+    RideRequestStatus:
+      type: string
+      enum: [requested, accepted, rejected, cancelled, expired]
+    TripStatus:
+      type: string
+      enum: [confirmed, rider_on_way, started, completed, cancelled, disputed]
+    PaymentMode:
+      type: string
+      enum: [cash, upi_external]
+    PaymentStatus:
+      type: string
+      enum: [pending, paid, disputed]
+    ComplaintStatus:
+      type: string
+      enum: [open, reviewing, resolved, dismissed]
+    Error:
+      type: object
+      nullable: true
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+    Meta:
+      type: object
+      additionalProperties: true
+    SendOtpRequest:
+      type: object
+      required: [phone]
+      properties:
+        phone:
+          type: string
+          example: "9876543210"
+    VerifyOtpRequest:
+      type: object
+      required: [otpRequestId, otp]
+      properties:
+        otpRequestId:
+          type: string
+        otp:
+          type: string
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        gender:
+          type: string
+          nullable: true
+        preferredLanguage:
+          type: string
+          example: kn
+        emergencyContactPhone:
+          type: string
+          nullable: true
+    User:
+      type: object
+      required: [id, phone, roles, status]
+      properties:
+        id:
+          type: string
+        phone:
+          type: string
+        name:
+          type: string
+          nullable: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+        activeRole:
+          $ref: '#/components/schemas/UserRole'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+    AuthResponse:
+      type: object
+      required: [accessToken, refreshToken, user]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+    OtpResponse:
+      type: object
+      required: [otpRequestId, expiresInSeconds]
+      properties:
+        otpRequestId:
+          type: string
+        expiresInSeconds:
+          type: integer
+    UpsertRiderProfileRequest:
+      type: object
+      required: [bikeNumber, baseVillage, profilePhotoFileId, licenseFileId, rcFileId, insuranceFileId]
+      properties:
+        bikeNumber:
+          type: string
+        baseVillage:
+          type: string
+        profilePhotoFileId:
+          type: string
+        licenseFileId:
+          type: string
+        rcFileId:
+          type: string
+        insuranceFileId:
+          type: string
+    RiderProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+        bikeNumber:
+          type: string
+        baseVillage:
+          type: string
+        verificationStatus:
+          $ref: '#/components/schemas/VerificationStatus'
+        rejectionReason:
+          type: string
+          nullable: true
+        rating:
+          type: number
+          nullable: true
+    CreateUploadUrlRequest:
+      type: object
+      required: [purpose, contentType]
+      properties:
+        purpose:
+          type: string
+          enum: [profile_photo, rider_license, rider_rc, rider_insurance]
+        contentType:
+          type: string
+    CreateUploadUrlResponse:
+      type: object
+      properties:
+        fileId:
+          type: string
+        uploadUrl:
+          type: string
+        expiresInSeconds:
+          type: integer
+    Area:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+    FareEstimate:
+      type: object
+      properties:
+        distanceKm:
+          type: number
+        suggestedFare:
+          type: integer
+        minFare:
+          type: integer
+        maxFare:
+          type: integer
+        currency:
+          type: string
+          example: INR
+    CreateRideOfferRequest:
+      type: object
+      required: [startAreaId, endAreaId, departureTime, availableSeats, fare]
+      properties:
+        startAreaId:
+          type: string
+        endAreaId:
+          type: string
+        pickupNote:
+          type: string
+        dropNote:
+          type: string
+        departureTime:
+          type: string
+          format: date-time
+        availableSeats:
+          type: integer
+          minimum: 1
+        fare:
+          type: integer
+    RideOffer:
+      type: object
+      properties:
+        id:
+          type: string
+        startArea:
+          $ref: '#/components/schemas/Area'
+        endArea:
+          $ref: '#/components/schemas/Area'
+        departureTime:
+          type: string
+          format: date-time
+        availableSeats:
+          type: integer
+        fare:
+          type: integer
+        status:
+          $ref: '#/components/schemas/RideOfferStatus'
+        rider:
+          $ref: '#/components/schemas/RiderSummary'
+    RiderSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        rating:
+          type: number
+          nullable: true
+        verificationStatus:
+          $ref: '#/components/schemas/VerificationStatus'
+        bikeNumberMasked:
+          type: string
+    CreateRideRequestRequest:
+      type: object
+      required: [requestedSeats]
+      properties:
+        pickupNote:
+          type: string
+        dropNote:
+          type: string
+        requestedSeats:
+          type: integer
+          minimum: 1
+    RideRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        rideOfferId:
+          type: string
+        passengerId:
+          type: string
+        requestedSeats:
+          type: integer
+        status:
+          $ref: '#/components/schemas/RideRequestStatus'
+    RideRequestAcceptResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        status:
+          $ref: '#/components/schemas/RideRequestStatus'
+        tripId:
+          type: string
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/TripStatus'
+        fare:
+          type: integer
+        paymentMode:
+          $ref: '#/components/schemas/PaymentMode'
+        paymentStatus:
+          $ref: '#/components/schemas/PaymentStatus'
+    CompleteTripRequest:
+      type: object
+      required: [paymentMode, paymentStatus]
+      properties:
+        paymentMode:
+          $ref: '#/components/schemas/PaymentMode'
+        paymentStatus:
+          $ref: '#/components/schemas/PaymentStatus'
+    CreateRatingRequest:
+      type: object
+      required: [tripId, ratedUserId, score]
+      properties:
+        tripId:
+          type: string
+        ratedUserId:
+          type: string
+        score:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+    CreateComplaintRequest:
+      type: object
+      required: [tripId, category, description]
+      properties:
+        tripId:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+    Complaint:
+      type: object
+      properties:
+        id:
+          type: string
+        tripId:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/ComplaintStatus'
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+    CreateRouteRequest:
+      type: object
+      required: [startAreaId, endAreaId, distanceKm, suggestedFare, minFare, maxFare]
+      properties:
+        startAreaId:
+          type: string
+        endAreaId:
+          type: string
+        distanceKm:
+          type: number
+        suggestedFare:
+          type: integer
+        minFare:
+          type: integer
+        maxFare:
+          type: integer
+    Route:
+      type: object
+      properties:
+        id:
+          type: string
+        startAreaId:
+          type: string
+        endAreaId:
+          type: string
+        distanceKm:
+          type: number
+        suggestedFare:
+          type: integer
+        minFare:
+          type: integer
+        maxFare:
+          type: integer
+    GenericSuccess:
+      type: object
+      properties:
+        ok:
+          type: boolean
+    GenericSuccessEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/GenericSuccess'
+    EnvelopeBase:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        error:
+          $ref: '#/components/schemas/Error'
+    OtpResponseEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/OtpResponse'
+    AuthResponseEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AuthResponse'
+    UserEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+    RiderProfileEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/RiderProfile'
+    RiderProfileListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/RiderProfile'
+    CreateUploadUrlEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CreateUploadUrlResponse'
+    AreaListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Area'
+    FareEstimateEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/FareEstimate'
+    RideOfferEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/RideOffer'
+    RideOfferListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/RideOffer'
+    RideRequestEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/RideRequest'
+    RideRequestListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/RideRequest'
+    RideRequestAcceptEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/RideRequestAcceptResponse'
+    TripEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Trip'
+    TripListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Trip'
+    ComplaintEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Complaint'
+    ComplaintListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Complaint'
+    RouteEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/EnvelopeBase'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Route'

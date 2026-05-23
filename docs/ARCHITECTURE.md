@@ -142,6 +142,12 @@ Rural usage needs low-friction behavior:
 7. Notifications.
 8. Field pilot instrumentation.
 
+Current planning artifacts:
+
+- `docs/WIREFRAMES.md`
+- `docs/API_CONTRACT.md`
+- `docs/openapi.mvp.yaml`
+
 ## 10. What Not To Build Yet
 
 - Surge pricing.
